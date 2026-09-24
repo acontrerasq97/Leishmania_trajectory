@@ -1,0 +1,11 @@
+/data/principal/ExprMatrix.h5ad
+/data/metadata/fle_coords.txt
+*.csv
+/results/
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+__pycache__/
+.venv/
+.DS_Store
