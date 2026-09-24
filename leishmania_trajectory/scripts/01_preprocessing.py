@@ -4,11 +4,8 @@
 Preprocessing of Leishmania scRNA-seq data for trajectory inference.
 
 """
-import os
 from pathlib import Path
 
-import ipywidgets as widgets
-import matplotlib
 import numpy as np
 import pandas as pd
 import scanpy as sc
@@ -35,15 +32,14 @@ CELL_DAYS_PATH = BASE_DIR / 'data' / 'metadata' /'cell_days.txt'
 GENE_SETS_PATH = BASE_DIR / 'data' / 'metadata' /'gene_sets.gmx'
 
 # Output files
+OUTPUT_H5AD = PROCESSED_DIR / "ExprMatrix.preprocessed.h5ad"
+OUTPUT_METADATA = PROCESSED_DIR / "cell_metadata.csv"
 VAR_DS_PATH = BASE_DIR / 'data' / 'metadata' / 'ExprMatrix.preprocessed.h5ad'
-GENE_SET_SCORES_PATH = BASE_DIR / 'data' / 'metadata' / 'gene_set_scores.csv'
+GENE_SET_SCORES_PATH = PROCESSED_DIR / 'gene_set_scores.csv'
 CELL_SETS_PATH = BASE_DIR / 'data' / 'metadata' / 'cell_sets.gmt'
 
 # Parameters
-N_HVG = 2000
-
-TIME_ORDER = ["0", "2", "5", "9"]
-
+#N_HVG = 2000 # Only if the method Seurat v3 will be used
 
 # ================================================================
 # 2. LOAD DATA
@@ -106,9 +102,79 @@ else:
 # 4. HIGHLY VARIABLE GENES
 # ============================================================
 
-
 # Identifying highly variable genes
+# Support raw counts
 adata.layers["counts"] = adata.X.copy()
 
-#Apply log(x + 1) to stabilize the variance
+
+#---------------------------------------
+# Method: Seurat V3
+#---------------------------------------
+
+#sc.pp.highly_variable_genes(
+#    adata,
+#    n_top_genes=N_HVG,
+#    flavor="seurat_v3",
+#    layer="counts"
+#)
+
+#adata.var['highly_variable'].sum()
+
+# Save the result in a custom column
+#adata.var["hvg_seurat_v3"] = adata.var["highly_variable"]
+
+#---------------------------------------------------
+# Method: Seurat V2 DOI: 10.1016/J.CELL.2019.01.006
+#---------------------------------------------------
+
+# Scale all cells to add up to 10,000
+sc.pp.normalize_total(adata, target_sum=1e4)
+
+# Apply log(x + 1) to stabilize the variance
 sc.pp.log1p(adata)
+
+# Method: mean.var.plot of Seurat v2 -> flavor='seurat'
+sc.pp.highly_variable_genes(
+    adata,
+    flavor='seurat',           # Activates the classic method mean.var.plot (Seurat v2)
+    n_bins=20,                 # Divides the genes into 20 bins
+    min_disp=1.0,              # Threshold of the Z-scored Fano Factor (Dispersion) at 1.0
+    max_disp=float('inf'),     # No maximum limit for dispersion
+    min_mean=0.1,              # Minimum expression threshold to avoid switched-off genes 
+    max_mean=float('inf')      # No maximum average expression limit
+)
+
+n_hvg = adata.var['highly_variable'].sum()
+n_hvg
+#del adata.var["highly_variable"] # Cleaning default column
+
+sc.pl.highly_variable_genes(adata) #Plot HVG
+
+
+# ============================================================
+# 5. CREATE PROCESSED DATASET
+# ============================================================
+
+# Saving processed dataset
+adata.write_h5ad(OUTPUT_H5AD, compression="gzip")
+
+# Metadata separately
+adata.obs.to_csv(OUTPUT_METADATA)
+
+# ============================================================
+# FINAL SUMMARY
+# ============================================================
+
+print(f"Cells          : {adata.n_obs}")
+print(f"Genes          : {adata.n_vars}")
+print(f"HVGs           : {n_hvg}")
+
+print("\nCells per day:")
+print(
+    adata.obs["day"]
+    .value_counts()
+    .sort_index()
+)
+
+print("\nOutput:")
+print(OUTPUT_H5AD)
