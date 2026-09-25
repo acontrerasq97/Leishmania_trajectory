@@ -1,4 +1,4 @@
-#!usr/bin/env python
+#!usr/bin/env python3
 
 """
 Preprocessing of Leishmania scRNA-seq data for trajectory inference.
@@ -34,7 +34,6 @@ GENE_SETS_PATH = BASE_DIR / 'data' / 'metadata' /'gene_sets.gmx'
 # Output files
 OUTPUT_H5AD = PROCESSED_DIR / "ExprMatrix.preprocessed.h5ad"
 OUTPUT_METADATA = PROCESSED_DIR / "cell_metadata.csv"
-VAR_DS_PATH = BASE_DIR / 'data' / 'metadata' / 'ExprMatrix.preprocessed.h5ad'
 GENE_SET_SCORES_PATH = PROCESSED_DIR / 'gene_set_scores.csv'
 CELL_SETS_PATH = BASE_DIR / 'data' / 'metadata' / 'cell_sets.gmt'
 
@@ -107,9 +106,9 @@ else:
 adata.layers["counts"] = adata.X.copy()
 
 
-#---------------------------------------
+# ---------------------------------------
 # Method: Seurat V3
-#---------------------------------------
+# ---------------------------------------
 
 #sc.pp.highly_variable_genes(
 #    adata,
@@ -123,9 +122,9 @@ adata.layers["counts"] = adata.X.copy()
 # Save the result in a custom column
 #adata.var["hvg_seurat_v3"] = adata.var["highly_variable"]
 
-#---------------------------------------------------
+# ---------------------------------------------------
 # Method: Seurat V2 DOI: 10.1016/J.CELL.2019.01.006
-#---------------------------------------------------
+# ---------------------------------------------------
 
 # Scale all cells to add up to 10,000
 sc.pp.normalize_total(adata, target_sum=1e4)
