@@ -79,6 +79,8 @@ sc.pp.neighbors(
 
 adata.obsm['X_umap'] = adata.obs[['x', 'y']].to_numpy().copy()
 
+#sc.pl.umap(adata, color=['day'])
+
 # ================================================================
 # 5. DIFFUSION MAP
 # ================================================================
