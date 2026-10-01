@@ -1,5 +1,3 @@
-#!usr/bin/env python3
-
 """
 Preprocessing of Leishmania scRNA-seq data for trajectory inference.
 
