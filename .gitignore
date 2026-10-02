@@ -1,7 +1,7 @@
-*.h5ad
+tmap*
+ExprMatrix*
 /data/metadata/fle_coords.txt
 /data/processed/gene_set_scores.csv
-/results/
 .Rproj.user/
 .Rhistory
 .RData

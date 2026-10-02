@@ -1,0 +1,40 @@
+
+Day 0
+amastigotes_0	6190
+late_metacyclics_0	1
+leptomonads_0_0	1
+
+Day 2
+amastigotes_2	7
+late_metacyclics_2	3
+leptomonads_0_2	47
+procyclics_2	11410
+procyclics_to_nectomonads_2	697
+leptomonads_1_2	31
+nectomonads_2	50
+early_metacyclics_2	10
+haptomonads_2	1
+leptomonads_2_2	1
+
+Day 5
+late_metacyclics_5	432
+leptomonads_0_5	2287
+procyclics_5	32
+procyclics_to_nectomonads_5	29
+leptomonads_1_5	2976
+nectomonads_5	2936
+early_metacyclics_5	996
+haptomonads_5	816
+leptomonads_2_5	12
+
+Day 9
+amastigotes_9	28
+late_metacyclics_9	1763
+leptomonads_0_9	1671
+procyclics_9	14
+procyclics_to_nectomonads_9	1
+leptomonads_1_9	298
+nectomonads_9	1164
+early_metacyclics_9	534
+haptomonads_9	796
+leptomonads_2_9	1094
