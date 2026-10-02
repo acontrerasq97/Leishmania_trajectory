@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """
 Waddington-OT trajectory inference for the Leishmania
 scRNA-seq dataset.

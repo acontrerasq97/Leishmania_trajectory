@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """
 Generate low-dimensional representations of the
 preprocessed Leishmania scRNA-seq dataset.
