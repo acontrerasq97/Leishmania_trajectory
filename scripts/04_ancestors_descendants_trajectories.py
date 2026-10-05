@@ -1,6 +1,7 @@
 
 from pathlib import Path
 
+import matplotlib.pyplot as plt
 import anndata
 import pandas as pd
 import wot
@@ -22,14 +23,13 @@ CELL_METADATA_PATH = DATA_DIR / "processed" / "cell_metadata.csv"
 EXPRESSION_PATH = DATA_DIR / "processed" / "ExprMatrix.preprocessed.h5ad"
 EXPRESSION_VAR_PATH = (DATA_DIR / "processed" / "ExprMatrix.embedded.h5ad")
 
-adata_var = anndata.read_h5ad(EXPRESSION_VAR_PATH)
-
 OUTPUT_DIR = WOT_DIR / "trajectories"
 TRENDS_DIR = WOT_DIR / "expression_trends"
+DIVERGENCE_DIR = WOT_DIR / "divergence"
 
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 TRENDS_DIR.mkdir(parents=True, exist_ok=True)
-
+DIVERGENCE_DIR.mkdir(parents=True, exist_ok=True)
 # ============================================================
 # WOT compatibility with current AnnData
 # ============================================================
@@ -129,21 +129,21 @@ def group_cell_sets_fixed(cell_set_paths, group_by_df, group_by_key="day"):
     return group_to_cell_sets
 
 # ============================================================
-# Group cell sets by time (day)
+# Group cell sets by day
 # ============================================================
 
-cell_sets_by_time = group_cell_sets_fixed(str(CELL_SETS_PATH), cell_metadata, group_by_key="day")
+cell_sets_by_day = group_cell_sets_fixed(str(CELL_SETS_PATH), cell_metadata, group_by_key="day")
 
 
-OUTPUT_FILE = OUTPUT_DIR / "cell_sets_by_time.txt"
+OUTPUT_FILE = OUTPUT_DIR / "cell_sets_by_day.txt"
 
 with open(OUTPUT_FILE, "w") as f:
 
-    for day in sorted(cell_sets_by_time.keys()):
+    for day in sorted(cell_sets_by_day.keys()):
 
         f.write(f"\nDay {day}\n")
 
-        for s in cell_sets_by_time[day]:
+        for s in cell_sets_by_day[day]:
 
             f.writelines(f'{s["name"]}\t{len(s["set"])}\n')
 
@@ -152,12 +152,12 @@ with open(OUTPUT_FILE, "w") as f:
 # Calculate trajectories and expression trends
 # ============================================================
 
-for day, cell_sets in sorted(cell_sets_by_time.items()):
+for day, cell_sets in sorted(cell_sets_by_day.items()):
 
     # Convert cell sets to the dictionary format expected by WOT
     cell_sets = {
         s["name"]: list(s["set"])
-        for s in cell_sets_by_time[day]
+        for s in cell_sets_by_day[day]
     }
 
     # Create population vectors
@@ -167,22 +167,22 @@ for day, cell_sets in sorted(cell_sets_by_time.items()):
     trajectory_lmj = tmap_model.trajectories(populations)
 
     # Save trajectories
-    #output_path = OUTPUT_DIR / f"leishmania_trajectories_day_{day}.h5ad"
+    output_path = OUTPUT_DIR / f"leishmania_trajectories_day_{day}.h5ad"
 
-    #trajectory_lmj.write_h5ad(output_path)
+    trajectory_lmj.write_h5ad(output_path)
 
     # Calculate expression trends along trajectories
     trajectory_trends = (wot.tmap.trajectory_trends_from_trajectory(trajectory_lmj, adata))
 
     # Save expression trends
-    #for i, trend in enumerate(trajectory_trends):
+    for i, trend in enumerate(trajectory_trends):
+        trajectory_name = list(cell_sets.keys())[i]
+        trends_path = (
+            TRENDS_DIR
+            / f"expression_trends_{trajectory_name}.h5ad"
+        )
 
-    #    trends_path = (
-    #        TRENDS_DIR
-    #        / f"expression_trends_day_{day}_{i}.h5ad"
-    #    )
-
-    #    trend.write_h5ad(trends_path)
+        trend.write_h5ad(trends_path)
 
 # ============================================================
 # Heatmap of expression trends
@@ -223,9 +223,10 @@ sns.heatmap(
     xticklabels=True,
     yticklabels=True
 )
-
 plt.xlabel("Day")
+plt.xticks(fontsize=6, rotation=0)
 plt.ylabel("WOT-weighted log-expression")
+plt.yticks(fontsize=3, rotation=0)
 plt.title("Expression trends along WOT trajectories")
 
 plt.tight_layout()
@@ -248,3 +249,32 @@ print(f"Heatmap saved to: {FIGURE_PATH}")
 # ============================================================
 
 adata_var = anndata.read_h5ad(EXPRESSION_VAR_PATH)
+divergence_lmj = wot.tmap.trajectory_divergence(adata_var, trajectory_lmj, distance_metric='total_variation')
+
+divergence_lmj.to_csv(DIVERGENCE_DIR/'divergence_LmjRy.csv')
+
+# Plot divergence
+divergence_lmj['name'] = divergence_lmj['name1'].str.split('/').str.get(0) + ' vs. ' + divergence_lmj['name2'].str.split('/').str.get(
+        0)
+
+terminal_lines = [
+    "haptomonads_9 vs. leptomonads_2_9",
+    "early_metacyclics_9 vs. leptomonads_2_9",
+    "leptomonads_2_9 vs. late_metacyclics_9",
+    "late_metacyclics_9 vs. leptomonads_0_9"
+]
+
+plt.figure(figsize=(8, 5))
+
+for line in terminal_lines:
+    sub = divergence_lmj[divergence_lmj["name"] == line]
+    plt.plot(sub["day1"], sub["distance"], marker="o", label=line.replace("_9", "").title())
+
+plt.xlabel("Day")
+plt.ylabel("Divergence Distance")
+plt.title("WOT Shared Ancestry: Terminal Lineages")
+plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+plt.grid(True, linestyle="--", alpha=0.5)
+plt.tight_layout()
+
+plt.show()
