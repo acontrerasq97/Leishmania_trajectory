@@ -175,14 +175,14 @@ for day, cell_sets in sorted(cell_sets_by_day.items()):
     trajectory_trends = (wot.tmap.trajectory_trends_from_trajectory(trajectory_lmj, adata))
 
     # Save expression trends
-    for i, trend in enumerate(trajectory_trends):
-        trajectory_name = list(cell_sets.keys())[i]
-        trends_path = (
-            TRENDS_DIR
-            / f"expression_trends_{trajectory_name}.h5ad"
-        )
+    #for i, trend in enumerate(trajectory_trends):
+    #    trajectory_name = list(cell_sets.keys())[i]
+    #    trends_path = (
+    #        TRENDS_DIR
+    #        / f"expression_trends_{trajectory_name}.h5ad"
+    #    )
 
-        trend.write_h5ad(trends_path)
+    #    trend.write_h5ad(trends_path)
 
 # ============================================================
 # Heatmap of expression trends
