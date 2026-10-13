@@ -52,4 +52,4 @@ fate_lmj.write_h5ad(FATE_H5AD_PATH)
 
 fate_df = fate_lmj.to_df() if hasattr(fate_lmj, "to_df") else pd.DataFrame(fate_lmj.X, index=fate_lmj.obs_names, columns=fate_lmj.var_names)
 
-fate_df.to_csv(FATE_CSV_PATH)
+fate_df.to_csv(FATE_CSV_PATH, index=True, index_label='cell_id')

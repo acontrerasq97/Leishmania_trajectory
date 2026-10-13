@@ -101,4 +101,4 @@ p_gene     <- plot_umap_3d(seu, color_by = "CD3E")
 p_clusters
 
 # 4. Save as a standalone interactive HTML file
-saveWidget(p_clusters, "umap_3d_clusters.html", selfcontained = TRUE)
+saveWidget(p_clusters, "leishmania_trajectory/figures/wot/umap_3d_clusters.html", selfcontained = TRUE)

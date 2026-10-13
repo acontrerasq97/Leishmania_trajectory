@@ -1,5 +1,5 @@
 tmap*
-ExprMatrix*
+ExprMatrix.*
 /data/metadata/fle_coords.txt
 /data/processed/gene_set_scores.csv
 .Rproj.user/
