@@ -1,0 +1,12 @@
+   cell_type                 mean_entropy sd_entropy total_cells
+   <fct>                            <dbl>      <dbl>       <int>
+ 1 leptomonads_2                   0.0136      0.127        1107
+ 2 late_metacyclics                0.0575      0.190        2199
+ 3 haptomonads                     0.193       0.342        1613
+ 4 nectomonads                     0.248       0.294        4150
+ 5 early_metacyclics               0.401       0.378        1540
+ 6 leptomonads_0                   0.548       0.524        4006
+ 7 procyclics_to_nectomonads       0.558       0.314         727
+ 8 leptomonads_1                   0.700       0.409        3305
+ 9 procyclics                      1.07        0.265       11456
+10 amastigotes                     1.15        0.197        6225
