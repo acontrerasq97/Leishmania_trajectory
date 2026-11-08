@@ -8,7 +8,7 @@ import seaborn as sns
 import numpy as np
 import wot
 
-BASE_DIR = Path ('leishmania_trajectory/')
+BASE_DIR = Path ('.')
 WOT_DIR = BASE_DIR / "results"/ "wot"
 
 DATA_DIR = BASE_DIR / 'data'
@@ -71,7 +71,7 @@ df_final['-log10_fdr'] = -np.log10(df_final['t_fdr'] + 1e-30)
 # Define standard statistical thresholds for coloring
 threshold_fdr = -np.log10(0.05) # Equivalent to FDR < 0.05
 threshold_fc_up = 1.05
-threshold_fc_down = 1
+threshold_fc_down = 0.95
 
 # Color code points based on biological regulation status
 colors = []
